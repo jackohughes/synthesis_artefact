@@ -1,0 +1,141 @@
+#!/bin/bash
+
+ARCHIVE="granule-synthesis-benchmarks.tar"
+
+DEMO=FALSE
+CATEGORIES=""
+CATEGORIESFLAG=""
+FILES=""
+FILESFLAG=""
+
+SHOWPROGRAM=FALSE
+SHOWPROGRAMFLAG=""
+
+VERBOSE=FALSE
+VERBOSEFLAG=""
+REPEATS="10"
+TIMEOUT="10"
+
+POSITIONAL_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+      EXTENSION="$2"
+        echo "-a, --attempts int                                Run each benchmark N times and average the results (default: N=10)"
+        echo "-c, --categories \"cat_1 ... cat_n\"                Runs all the benchmarks of the supplied categories. Options may be any"
+        echo "                                                  combination of the following: List, Stream, Bool, Maybe, Nat, Tree, Misc"
+        echo "                                                  Cannot be used in conjunction with -f"
+        echo "-d, --demo                                        Run a quick instance (run each benchmark only once) of"
+        echo "                                                  the benchmarks for the Stream category of programs to check"
+        echo "                                                  things are working"
+        echo "-f, --files \"name:cat_1 ... name:cat_n\"           Supply the benchmark tool with a list of benchmarks to run given by"
+        echo "                                                  the benchmarks name \(see benchmarkList\) followed by the category to"
+        echo "                                                  which it belongs separated by a colon"
+        echo "-h, --help                                        Print usage"
+        echo "-s, --show-program                                Display synthesised program for each benchmark"
+        echo "-t, --timeout int                                 Specify timeout limit for each benchmark in seconds (default: N=10)"
+        echo "-v, --verbose                                     Display aggregate measuring info for each benchmark"
+        exit 0
+        ;;
+    -c|--categories)
+      CATEGORIES="$2"
+      CATEGORIESFLAG="-c $2"
+      shift # past argument
+      shift # past value
+      ;;
+    -f|--files)
+      FILES="$2"
+      FILESFLAG="-f $2"
+      shift # past argument
+      shift # past value
+      ;;
+    -a|--attempts)
+      REPEATS="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -t|--timeout)
+      TIMEOUT="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -v|--verbose)
+      VERBOSE=TRUE
+      VERBOSEFLAG="-v"
+      shift # past argument
+      ;;
+    -d|--demo)
+      DEMO=TRUE
+      shift # past argument
+      ;;  
+    -s|--show-program)
+      SHOWPROGRAMFLAG="-s"
+      shift # past argument
+      ;;
+    -*|--*)
+      echo "Unknown option $1"
+      exit 1
+      ;;
+    *)
+      POSITIONAL_ARGS+=("$1") # save positional arg
+      shift # past argument
+      ;;
+  esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+DATE=$(date -d "today" +"%Y-%m-%d-%H-%M")
+LOGFILE="benchmarks-$DATE.log"
+PDFFILE="results-$DATE.pdf"
+
+
+echo "Loading image from tar archive: $ARCHIVE"
+IMAGE=$(docker load < granule-synthesis-benchmarks.tar | tail -c +14)
+
+
+echo "Creating container from image: $IMAGE..."
+echo "Config: "
+echo "  - Demo mode: $DEMO"
+echo "  - Verbose flag set: $VERBOSE"
+echo "  - Show program flag set: $SHOWPROGRAM"
+echo "  - Attempt no.: $REPEATS"
+echo "  - Timeout: $TIMEOUT seconds"
+if [[ -z "$FILES" ]]; 
+then
+    echo "  - Files: All "
+    if [[ -z "$CATEGORIES" ]]; 
+    then
+        if [ "$DEMO" == "TRUE" ];
+        then 
+            echo "  - Categories: Stream"
+        else 
+            echo "  - Categories: All"
+        fi
+    else 
+        echo "  - Categories: $CATEGORIES"
+    fi
+else 
+    echo "  - Files: $FILES"
+    echo "  - Categories: None"
+fi
+if [ "$DEMO" == "TRUE" ];
+then 
+    CONTAINER=$(docker create -q -it $IMAGE -a 1 $VERBOSEFLAG $SHOWPROGRAMFLAG -c "Stream") 
+else 
+    CONTAINER=$(docker create -q -it $IMAGE -a $REPEATS -t $TIMEOUT $VERBOSEFLAG $SHOWPROGRAMFLAG $CATEGORIESFLAG $FILESFLAG) 
+fi 
+echo "Starting container..."
+docker start -i $CONTAINER  
+docker cp $CONTAINER:results.pdf ./$PDFFILE > /dev/null
+echo ""
+echo "Copied results PDF to $PDFFILE"
+docker cp $CONTAINER:benchmarks.log ./$LOGFILE > /dev/null
+echo "Copied log file to $LOGFILE"
+echo ""
+echo "Removing container..."
+docker rm -v $CONTAINER > /dev/null
+echo "Container removed. All done!"
+
+exit 1
