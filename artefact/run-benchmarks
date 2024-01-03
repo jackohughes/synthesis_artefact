@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ARCHIVE="granule-synthesis-benchmarks.tar"
+ARCHIVE="granule-synthesis-benchmarks.tar.gz"
 
 DEMO=FALSE
 CATEGORIES=""
