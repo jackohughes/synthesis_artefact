@@ -45,10 +45,24 @@ this process, described in Section 1.2.
 
 ### 2.1. Using Docker Commands
 
-#### 2.1.1 Verify the image archive checksum
+#### 2.1.1 Verify the image archive
+First, inside the `/artefact/` directory, run `md5` or `md5sum` to check the
+integrity of the archive: 
+
+    md5 granule-synthesis-benchmarks.tar.gz
+
+or 
+    md5sum granule-synthesis-benchmarks.tar.gz
+
+This should give the following output (depending on the command used):
+
+    MD5 (granule-synthesis-benchmarks.tar.gz) = 938446f76d444b09afa4f49017efa4a8
+
+or 
+    938446f76d444b09afa4f49017efa4a8  granule-synthesis-benchmarks.tar.gz
 
 #### 2.1.2. Extract the image archive 
-First, inside the `/artefact/` directory, extract `granule-synthesis-benchmarks.tar.gz` 
+Extract `granule-synthesis-benchmarks.tar.gz` 
 to `granule-synthesis-benchmarks.tar` using the command:
 
     tar -xf granule-synthesis-benchmarks.tar.gz    
@@ -232,6 +246,40 @@ for the arguments `-v -s -a 10`.
 
 ## 5. Other configurations 
 
+The user can control the configuration of `grenchmark` using several flags which we 
+detail in this section. The flags can either be provided to the `docker create` 
+command or to the `run-benchmarks` script.
+
+The following flags may be used to configure `grenchmark` to run other
+combinations of benchmarks:
+- `-c, --categories "cat_1 ... cat_n"`: This flag takes an argument which is a
+  non-empty list of whitespace separated category names in quotation marks. The
+  categories can be any combination of `List`, `Stream`, `Bool`, `Maybe`, `Nat`,
+  `Tree`, and `Misc`. `grenchmark` will then only include these categories of
+  benchmark programs when benchmarking.
+- `-f, --files "name:cat_1 ... name:cat_n"`: This flag takes an argument which
+  is a non-empty list of whitespace separated program/category pairs (separated
+  by a colon). The program's category must be included as some benchmark programs 
+  have the same name in different categories, e.g. a `map` benchmark program appears 
+  in `List`, `Stream`, `Maybe`, and `Tree` categories.
+
+For example, if we wanted to run each program in the `Maybe` and `Misc`
+categories of benchmarks along with the program append from the `List` category, 
+we can supply the arguments to the `docker create` command: 
+
+    docker create -q -it benchmarks-artefact:dev -c "Maybe Misc" -f "append:List"
+
+or to the `run-benchmarks` script:
+
+    ./run-benchmarks -c "Maybe Misc" -f "append:List" 
+
+The following flags can also be used to set parameters of the benchmarking:
+- `-a, --attempts int`: As already mentioned, used to specify how many times we
+  should repeat each benchmark program. Default is 10.
+- `-t, --timeout int`: Used to give a custom timeout length to the tool in
+  seconds. `grenchmark` then runs each benchmark program for this duration,
+  marking the benchmark program as having timed out if it exceeds this limit.
+  Default is 10. 
 
 ## 6. Acknowledgements
 
