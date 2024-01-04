@@ -1,11 +1,10 @@
 # ESOP 2024 artefact for submission 1938
 
-The primary purpose of this artefact is to reproduce Table 1 from Section 5 of
-the paper (page 24), 
+This artefact contains an image of Granule which runs the suite of benchmark 
+tests used for the evaluation in Section 5 of the paper. 
 
-
-by running the benchmarking tool `grenchmark` inside a
-container loaded from an image of Granule. 
+The primary purpose of this artefact is to reproduce Table 1 from Section 5 (page 24), 
+however, the tool can run several different benchmark configurations. 
 
 The tool is configurable, allowing the user to specify several properties of 
 the benchmarking, including:
