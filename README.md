@@ -1,5 +1,6 @@
 # ESOP 2024 artefact for submission 1938
 
+## 1. Overview
 This artefact contains an image of Granule which runs the suite of benchmark 
 tests used for the evaluation in Section 5 of the paper. 
 
@@ -24,7 +25,7 @@ of the benchmarking tool. These include:
 
 - The verbosity of the output
 
-## 1. Getting started 
+## 2. Getting started 
 
 We begin by explaining how to install and run a short instance of the
 benchmarking tool using Docker commands in Section 1.1. Instead of running the
@@ -34,21 +35,29 @@ with only 1 synthesis attempt per benchmark.
 We also supply a bash script `run-benchmarks` which automates
 this process, described in Section 1.2. 
 
-### 1.1. Using Docker Commands
+### 2.1. Using Docker Commands
 
-#### 1.1.1. Load the image into docker
-First, inside the `/artefact/` directory, load the image into docker:
+#### 2.1.1. Extract the image archive 
+First, inside the `/artefact/` directory, extract `granule-synthesis-benchmarks.tar.gz` 
+to `granule-synthesis-benchmarks.tar` using the command:
 
-    docker load < granule-synthesis-benchmarks.tar.gz
+    tar -xf granule-synthesis-benchmarks.tar.gz    
 
-This returns the following output:
+#### 2.1.2. Load the image into docker
+Next, load the image into docker:
+
+    docker load < granule-synthesis-benchmarks.tar
+
+This prints the following output to `stdout`:
 
     Loaded image: benchmarks-artefact:dev
 
+where `benchmarks-artefact:dev` is the repository name and tag separated by 
+a colon.
 
-#### 1.1.2. Create the docker container 
-Next, create the container passing in the repository:tag identifier from above
-using the command:
+#### 2.1.2. Create the docker container 
+Next, create the container passing in the repository:tag identifier
+`benchmarks-artefact:dev` from above using the command:
 
     docker create -q -it benchmarks-artefact:dev -a 1 -c "List"
 
@@ -61,36 +70,47 @@ something like:
 
     6d8af538ec541dd581ebc2a24153a28329acb5268abe5ef868c1f1a261221752
 
+We will henceforth refer to this as CONTAINER_ID.
 
-#### 1.1.2. Start the docker container 
+#### 2.1.2. Start the docker container 
 Copy the container ID returned by `docker create` and pass it into the `docker
-start` command, e.g.:
+start` command:
 
-    docker start -i 6d8af538ec541dd581ebc2a24153a28329acb5268abe5ef868c1f1a261221752
+    docker start -i CONTAINER_ID
 
-This will then run `grenchmark` in the container with our supplied
+This will then run the `grenchmark` tool in the container with our supplied
 configuration. This should take under 1 minute to run. We will explain the
 output produced by `grenchmark` in depth in Section 2. For now, we verify that
 it's working correctly by checking that the output looks something like:
 
     example of grenchmark output here
 
-#### 1.1.3. Copy the results table PDF 
+#### 2.1.3. Copy the results table PDF 
 
-After `docker start` has finished, copy the resulting PDF to your machine using:
+The `grenchmark` tool will generate a PDF file containing a table of benchmark
+results. After `docker start` has finished, copy the resulting PDF to your
+machine using:
 
-    docker cp $CONTAINER:results.pdf .
+    docker cp CONTAINER_ID:results.pdf .
 
-This will create a file called `results.pdf` in the `/archive/` directory. Open the 
-PDF and verify the table has been generated. The table will look like: 
+This will create a file called `results.pdf` in the `/artefact/` directory. Open
+the PDF and verify the table has been generated. The table will look like: 
 
 <!-- ![Results Table Demo](/demo-table.png "table") -->
 
+The log file produced by `grenchmark` can also be copied to the `/artefact/` directory 
+using: 
 
+    docker cp CONTAINER_ID:benchmark.log .
 
+#### 2.1.4. Remove the docker container
 
+On successfully copying over the PDF (and/or log file), the container can be 
+removed using: 
 
-### 1.2. Using `run-benchmarks`
+    docker rm -v CONTAINER_ID
+
+### 2.2. Using `run-benchmarks`
 The user can run this script with:
 
     ./run-benchmarks <OPTIONS>
@@ -104,11 +124,11 @@ This "mode" runs all the benchmarks for the List category of programs only, with
 1 attempt per benchmark. This is considerably faster than running the full suite
 to generate the paper from the table, so it is useful to run first.
 
-## 2. How `grenchmark` works
+## 3. Understanding `grenchmark` output
 
-## 3. Reproducing the full results
+## 4. Reproducing the full results table
 
-### 3.1. Using docker commands
+### 4.1. Using docker commands
 
 To reproduce the table of results from the paper, simply run the artefact with no 
 arguments:
@@ -122,7 +142,7 @@ before removing the container:
 The resulting PDF file will be available at `results.pdf` in the `/artefact/` 
 directory. The log file produced by `grenchmark` can also be copied over with: 
 
-### 3.2. Using `run-benchmarks` 
+### 4.2. Using `run-benchmarks` 
 
 Alternatively, simply run the bash script with no arguments:
 
@@ -135,8 +155,8 @@ automatically remove the container.
 A log file `benchmarks-YYYY-MM-DD-hh-mm.log` will be copied over with the same
 format. 
 
-## 4. Other configurations 
+## 5. Other configurations 
 
 
-## Acknowledgements
+## 6. Acknowledgements
 
