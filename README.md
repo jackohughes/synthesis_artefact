@@ -105,9 +105,11 @@ This "mode" runs all the benchmarks for the List category of programs only, with
 1 attempt per benchmark. This is considerably faster than running the full suite
 to generate the paper from the table, so it is useful to run first.
 
-## Reproducing the full results
+## 2. How `grenchmark` works
 
-### 2.1. Using docker commands
+## 3. Reproducing the full results
+
+### 3.1. Using docker commands
 
 To reproduce the table of results from the paper, simply run the artefact with no 
 arguments:
@@ -121,7 +123,7 @@ before removing the container:
 The resulting PDF file will be available at `results.pdf` in the `/artefact/` 
 directory. The log file produced by `grenchmark` can also be copied over with: 
 
-### 2.2. Using `run-benchmarks` 
+### 3.2. Using `run-benchmarks` 
 
 Alternatively, simply run the bash script with no arguments:
 
@@ -134,7 +136,7 @@ automatically remove the container.
 A log file `benchmarks-YYYY-MM-DD-hh-mm.log` will be copied over with the same
 format. 
 
-## 3. Other configurations 
+## 4. Other configurations 
 
 
 ## Acknowledgements
