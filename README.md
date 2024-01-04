@@ -139,13 +139,39 @@ This script will automatically load the docker image, create and start the
 container, copy the results table PDF and log file to the `/artefact/`
 directory, before removing the container.  
 
-## 3. Understanding `grenchmark` output and table
+## 3. Reproducing the full results table
 
-While running, `grenchmark` will print the status of the benchmarking to 
-`stdout`. This section describes this output in Section 3.1 and how to 
-read the table of results in Section 3.2
+### 3.1. Using docker commands
 
-### 3.1 The `grenchmark` output
+To reproduce the table of results from the paper, repeat the above steps up
+to and including 2.1.3. When creating the docker container, however, simply 
+create it with no additional arguments:
+
+    docker create -q -it benchmarks-artefact:dev
+
+The default values for running the benchmarks as per the table will be used by
+`grenchmark`. Then repeat steps from 2.1.5 onwards to start the container, copy
+the file(s) to the host machine, and remove the container.
+
+### 3.2. Using `run-benchmarks` 
+
+Alternatively, simply run the bash script with no arguments:
+
+    ./run_benchmarks
+
+The resulting PDF will be copied over by the script with a filename
+`results-YYYY-MM-DD-hh-mm.pdf`, i.e. with a datetime stamp. 
+
+The log file `benchmarks-YYYY-MM-DD-hh-mm.log` will be copied over with the same
+format. 
+
+## 4. Understanding `grenchmark` output and table
+
+While running, `grenchmark` will print the status of the benchmarking to
+`stdout`. This section describes this output in Section 3.1 and how to read the
+table of results in Section 3.2
+
+### 4.1 The `grenchmark` output
 
 The tool runs the benchmark tests in order of synthesis mode. As 
 described in Section 5 of the paper, there are two modes of synthesis:
@@ -179,7 +205,7 @@ After completing each benchmark, the tool builds a LaTeX table from the results
 and runs `pdflatex` to generate a PDF file of the table. The tool indicates
 whether this task was successful or not.
 
-### 3.2.1 Additional output information
+### 4.2.1 Additional output information
 
 As mentioned, the user can optionally supply two flags to `grenchmark`, which instruct 
 it to print additional output information while carrying out the benchmarks:
@@ -201,36 +227,8 @@ The above flags can be used in combination to achieve an output such as:
 
 for the arguments `-v -s -a 10`. 
 
-### 3.2 
+### 4.2 The results table
 
-## 4. Reproducing the full results table
-
-### 4.1. Using docker commands
-
-To reproduce the table of results from the paper, simply run the artefact with no 
-arguments:
-
-The default values for running the benchmarks as per the table will be loaded by
-`grenchmark`. After the container finishes running, copy the generated PDF file
-from the container using the `docker cp` command:
-
-before removing the container:
-
-The resulting PDF file will be available at `results.pdf` in the `/artefact/` 
-directory. The log file produced by `grenchmark` can also be copied over with: 
-
-### 4.2. Using `run-benchmarks` 
-
-Alternatively, simply run the bash script with no arguments:
-
-    ./run_benchmarks
-
-The resulting PDF will be copied over by the script with a filename
-`results-YYYY-MM-DD-hh-mm.pdf`, i.e. with a datetime stamp. The script will
-automatically remove the container. 
-
-A log file `benchmarks-YYYY-MM-DD-hh-mm.log` will be copied over with the same
-format. 
 
 ## 5. Other configurations 
 
