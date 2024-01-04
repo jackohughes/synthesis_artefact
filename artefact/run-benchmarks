@@ -92,7 +92,7 @@ PDFFILE="results-$DATE.pdf"
 
 
 echo "Loading image from tar archive: $ARCHIVE"
-IMAGE=$(docker load < granule-synthesis-benchmarks.tar | tail -c +14)
+IMAGE=$(docker load < $ARCHIVE | tail -c +14)
 
 
 echo "Creating container from image: $IMAGE..."
