@@ -1,7 +1,3 @@
-#!/bin/bash
-
-ARCHIVE="granule-synthesis-benchmarks.tar.gz"
-
 DEMO=FALSE
 CATEGORIES=""
 CATEGORIESFLAG=""
@@ -25,7 +21,6 @@ while [[ $# -gt 0 ]]; do
         echo "-a, --attempts int                                Run each benchmark N times and average the results (default: N=10)"
         echo "-c, --categories \"cat_1 ... cat_n\"                Runs all the benchmarks of the supplied categories. Options may be any"
         echo "                                                  combination of the following: List, Stream, Bool, Maybe, Nat, Tree, Misc"
-        echo "                                                  Cannot be used in conjunction with -f"
         echo "-d, --demo                                        Run a quick instance (run each benchmark only once) of"
         echo "                                                  the benchmarks for the Stream category of programs to check"
         echo "                                                  things are working"
@@ -70,6 +65,7 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       ;;  
     -s|--show-program)
+      SHOWPROGRAM=TRUE
       SHOWPROGRAMFLAG="-s"
       shift # past argument
       ;;
@@ -86,56 +82,69 @@ done
 
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
-DATE=$(date -d "today" +"%Y-%m-%d-%H-%M")
+DATE=$(date +"%T")
 LOGFILE="benchmarks-$DATE.log"
 PDFFILE="results-$DATE.pdf"
 
-
-echo "Loading image from tar archive: $ARCHIVE"
-IMAGE=$(docker load < $ARCHIVE | tail -c +14)
-
-
-echo "Creating container from image: $IMAGE..."
-echo "Config: "
-echo "  - Demo mode: $DEMO"
-echo "  - Verbose flag set: $VERBOSE"
-echo "  - Show program flag set: $SHOWPROGRAM"
-echo "  - Attempt no.: $REPEATS"
-echo "  - Timeout: $TIMEOUT seconds"
-if [[ -z "$FILES" ]]; 
+IMAGE=$(cat .imageID)
+if [ $? -eq 0 ]
 then
-    echo "  - Files: All "
-    if [[ -z "$CATEGORIES" ]]; 
+    echo "Running container with config:"
+    echo "  - Demo mode: $DEMO"
+    echo "  - Verbose flag set: $VERBOSE"
+    echo "  - Show program flag set: $SHOWPROGRAM"
+    echo "  - Attempts: $REPEATS"
+    echo "  - Timeout: $TIMEOUT seconds"
+    if [[ -z "$FILES" ]]; 
     then
-        if [ "$DEMO" == "TRUE" ];
-        then 
-            echo "  - Categories: Stream"
+        echo "  - Files: All "
+        if [[ -z "$CATEGORIES" ]]; 
+        then
+            if [ "$DEMO" == "TRUE" ];
+            then 
+                echo "  - Categories: List"
+            else 
+                echo "  - Categories: All"
+            fi
         else 
-            echo "  - Categories: All"
+            echo "  - Categories: $CATEGORIES"
         fi
     else 
-        echo "  - Categories: $CATEGORIES"
+        echo "  - Files: $FILES"
+        echo "  - Categories: None"
+    fi
+    if [ "$DEMO" == "TRUE" ];
+    then 
+        docker run --cidfile .cid -ti $IMAGE -a 1 -c "List" $VERBOSEFLAG $SHOWPROGRAMFLAG 
+    else 
+        docker run --cidfile .cid -ti $IMAGE -a $REPEATS -t $TIMEOUT $CATEGORIESFLAG $FILESFLAG $VERBOSEFLAG $SHOWPROGRAMFLAG 
+    fi 
+else 
+    echo "No Image ID found! Have you run ./install yet?"
+    exit 1
+fi
+
+if [ $? -eq 0 ]
+then 
+    CONTAINERID=$(cat .cid)
+    echo "Copying results PDF from the container..."
+    docker cp $CONTAINERID:results.pdf .
+    if [ $? -eq 0 ]
+        echo "PDF copied to $PDFFILE"
+    else 
+        echo "Couldn't copy the PDF file!"
+    exit 1
+    fi
+    echo "Copying logfile from the container..."
+    docker cp $CONTAINERID:results.pdf .
+    if [ $? -eq 0 ]
+        echo "Log file copied to $LOGFILE"
+    else 
+        echo "Couldn't copy the log file!"
+    exit 1
     fi
 else 
-    echo "  - Files: $FILES"
-    echo "  - Categories: None"
+    echo "Container failed to run."
+    exit 1
 fi
-if [ "$DEMO" == "TRUE" ];
-then 
-    CONTAINER=$(docker create -q -it $IMAGE -a 1 $VERBOSEFLAG $SHOWPROGRAMFLAG -c "Stream") 
-else 
-    CONTAINER=$(docker create -q -it $IMAGE -a $REPEATS -t $TIMEOUT $VERBOSEFLAG $SHOWPROGRAMFLAG $CATEGORIESFLAG $FILESFLAG) 
-fi 
-echo "Starting container..."
-docker start -i $CONTAINER  
-docker cp $CONTAINER:results.pdf ./$PDFFILE > /dev/null
-echo ""
-echo "Copied results PDF to $PDFFILE"
-docker cp $CONTAINER:benchmarks.log ./$LOGFILE > /dev/null
-echo "Copied log file to $LOGFILE"
-echo ""
-echo "Removing container..."
-docker rm -v $CONTAINER > /dev/null
-echo "Container removed. All done!"
-
-exit 1
+exit 0
