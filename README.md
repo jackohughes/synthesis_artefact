@@ -32,12 +32,12 @@ using Docker commands. Instead of running the full benchmark suite, we will just
 run it for the List category of programs with only 1 synthesis attempt per
 benchmark. 
 
-To install the artefact see the INSTALLATION file. This is a short process 
+To install the artefact see the INSTALL file. This is a short process 
 which comprises loading the image of the container into Docker.
 
 After installation, the tool can be run with 
 
-    docker run --cidfile .cid -ti artefact:dev --attempts 1 --categories "List"
+    docker run --cidfile .cid -ti synthesis-artefact:dev --attempts 1 --categories "List"
 
 which creates a container from the image and executes it with our above
 mentioned configuration: `-attemtps 1` specifies only 1 attempt per benchmark
