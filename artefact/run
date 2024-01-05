@@ -52,11 +52,6 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    -t|--timeout)
-      TIMEOUT="$2"
-      shift # past argument
-      shift # past value
-      ;;
     -v|--verbose)
       VERBOSE=TRUE
       VERBOSEFLAG="-v"
@@ -70,6 +65,11 @@ while [[ $# -gt 0 ]]; do
       SHOWPROGRAM=TRUE
       SHOWPROGRAMFLAG="-s"
       shift # past argument
+      ;;
+    -t|--timeout)
+      TIMEOUT="$2"
+      shift # past argument
+      shift # past value
       ;;
     -*|--*)
       echo "Unknown option $1"
@@ -88,7 +88,9 @@ DATE=$(date +"%T")
 LOGFILE="benchmarks-$DATE.log"
 PDFFILE="results-$DATE.pdf"
 
-IMAGE=$(cat .imageID)
+rm -f .cid
+
+IMAGE="synthesis-artefact:dev"
 if [ $? -eq 0 ]
 then
     echo "Running container with config:"
@@ -119,7 +121,7 @@ then
     then 
         docker run --cidfile .cid -ti $IMAGE -a 1 -c "List" $VERBOSEFLAG $SHOWPROGRAMFLAG 
     else 
-        docker run --cidfile .cid -ti $IMAGE -a $REPEATS -t $TIMEOUT $CATEGORIESFLAG $FILESFLAG $VERBOSEFLAG $SHOWPROGRAMFLAG 
+        docker run --cidfile .cid -ti $IMAGE -t -t $TIMEOUT -a $REPEATS $CATEGORIESFLAG $FILESFLAG $VERBOSEFLAG $SHOWPROGRAMFLAG 
     fi 
 else 
     echo "No Image ID found! Have you run ./install yet?"

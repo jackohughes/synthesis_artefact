@@ -50,14 +50,12 @@ then
   then
     # Load the container image
     echo "Loading container image from archive into Docker..."
-    IMAGE=$(docker load < $ARCHIVE | tail -c +14)
+    docker load < $ARCHIVE 
     if [ $? -eq 0 ]
     then
-      touch .imageID
-      echo $IMAGE > .imageID
       echo "Done!"
       echo "You can now run the container image using:"
-      echo "./run -r [OPTIONS]"
+      echo "./run [OPTIONS]"
       echo "See README for more info on running the container" 
       echo "Run ./install -u to remove the image when finished." 
     else   
@@ -68,10 +66,8 @@ then
   fi
 elif [ "$UNINSTALL" == "TRUE" ];
 then 
-  IMAGE=$(cat .imageID)
-  echo "Removing image  $IMAGE..."
-  docker image rm -f $IMAGE
-  rm -f .imageID
+  echo "Removing image..."
+  docker image rm -f synthesis-artefact:dev
   if [ $? -eq 0 ] 
   then 
     echo "Image removed succesfully. All done!"
