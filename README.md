@@ -224,12 +224,18 @@ For example, using the options `-s -f "map:List" -a 1` will log the following ou
 The table in the PDF file records the results comparing grade-and-type-directed
 synthesis (the Graded column) vs. purely type-directed synthesis (the Cartesian
 column) where a program that doesn't type check against the original graded type
-is discarded and we synthesise another program. The left column gives the
-benchmark name, the number of in-scope top-level definitions that can be used as
-components in the synthesis (labeled Ctxt) and the minimum number of examples
-needed to synthesise the programs in the Graded and Cartesian columns. The
-number in parentheses notes the number of extra-examples required to synthesise
-a Cartesian program if we forgo type-checking.
+is discarded and we synthesise another program. The description from Section 5.2
+provides a detailed overview of how to read the results table. We restate the
+main points in this section and show how the table resulting from running the
+benchmarking tool as per Section 3 of this document can be compared to the paper
+table.
+
+The left column gives the benchmark name, the number of in-scope top-level
+definitions that can be used as components in the synthesis (labeled Ctxt) and
+the minimum number of examples needed to synthesise the programs in the Graded
+and Cartesian columns. The number in parentheses notes the number of
+extra-examples required to synthesise a Cartesian program if we forgo
+type-checking.
 
 Each subsequent results column records whether the program was synthesised
 succesfully or not with a tick or cross, the mean synthesis time (μT) or if a
