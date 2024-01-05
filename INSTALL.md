@@ -10,14 +10,14 @@ First verify the integrity of the archive with `md5sum` or `md5` (depending on
 the user's system):
 
     md5sum synthesis-artefact.tar.gz
-    dfa5103226738bd40d051bc6d484ff5c synthesis-artefact.tar.gz
+    a00191ce87b87ee0635a028dae56f776 synthesis-artefact.tar.gz
 
 or 
 
-    md5 granule-synthesis-benchmarks.tar.gz
-    MD5 (synthesis-artefact.tar.gz) = dfa5103226738bd40d051bc6d484ff5c
+    md5 synthesis-artefact.tar.gz
+    MD5 (synthesis-artefact.tar.gz) = a00191ce87b87ee0635a028dae56f776
 
-check that the hash is dfa5103226738bd40d051bc6d484ff5c.  
+check that the hash is a00191ce87b87ee0635a028dae56f776.  
 
 ### 1.1 Using Docker commands 
 
