@@ -59,7 +59,7 @@ then
       echo "You can now run the container image using:"
       echo "./run -r [OPTIONS]"
       echo "See README for more info on running the container" 
-      echo "Run ./install -u to remove the container when finished." 
+      echo "Run ./install -u to remove the image when finished." 
     else   
       echo "Couldn't load the container image into Docker!"
     fi
@@ -68,20 +68,15 @@ then
   fi
 elif [ "$UNINSTALL" == "TRUE" ];
 then 
-  echo "Uninstalling..."
-  CONTAINEDID=$(cat .cid)
-  if [ $? -eq 0 ]
-  then
-    echo "Removing Docker container $CONTAINERID..."
-    docker rm $CONTAINERID > /dev/null
-    if [ $? -eq 0 ]
-    then
-      echo "Container $CONTAINERID removed. All done!" 
-    else
-      echo "Couldn't remove the container $CONTAINERID"
-    fi
+  IMAGE=$(cat .imageID)
+  echo "Removing image  $IMAGE..."
+  docker image rm -f $IMAGE
+  rm -f .imageID
+  if [ $? -eq 0 ] 
+  then 
+    echo "Image removed succesfully. All done!"
   else 
-    echo "No container id found. Has the container been run?" 
-  fi
+    echo "Couldn't remove image."
+  fi 
 fi 
-exit 1
+exit 0

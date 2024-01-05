@@ -1,3 +1,5 @@
+#!/bin/bash
+
 DEMO=FALSE
 CATEGORIES=""
 CATEGORIESFLAG=""
@@ -128,16 +130,18 @@ if [ $? -eq 0 ]
 then 
     CONTAINERID=$(cat .cid)
     echo "Copying results PDF from the container..."
-    docker cp $CONTAINERID:results.pdf .
+    docker cp $CONTAINERID:results.pdf ./$PDFFILE
     if [ $? -eq 0 ]
+    then
         echo "PDF copied to $PDFFILE"
     else 
         echo "Couldn't copy the PDF file!"
     exit 1
     fi
     echo "Copying logfile from the container..."
-    docker cp $CONTAINERID:results.pdf .
+    docker cp $CONTAINERID:benchmarks.log ./$LOGFILE
     if [ $? -eq 0 ]
+    then
         echo "Log file copied to $LOGFILE"
     else 
         echo "Couldn't copy the log file!"
@@ -145,6 +149,14 @@ then
     fi
 else 
     echo "Container failed to run."
-    exit 1
+fi
+echo "Removing container..."
+docker rm $CONTAINERID > /dev/null
+if [ $? -eq 0 ]
+then
+  rm -f .cid
+  echo "Container $CONTAINERID removed. All done!" 
+else
+  echo "Couldn't remove the container $CONTAINERID"
 fi
 exit 0
