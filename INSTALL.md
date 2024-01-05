@@ -9,15 +9,15 @@ how to do so in this file.
 First verify the integrity of the archive with `md5sum` or `md5` (depending on
 the user's system):
 
-    $ md5sum granule-synthesis-benchmarks.tar.gz
-    $ 938446f76d444b09afa4f49017efa4a8  granule-synthesis-benchmarks.tar.gz
+    md5sum synthesis-artefact.tar.gz
+    dfa5103226738bd40d051bc6d484ff5c synthesis-artefact.tar.gz
 
 or 
 
-    $ MD5 (granule-synthesis-benchmarks.tar.gz) = 938446f76d444b09afa4f49017efa4a8
-    $ md5 granule-synthesis-benchmarks.tar.gz
+    md5 granule-synthesis-benchmarks.tar.gz
+    MD5 (synthesis-artefact.tar.gz) = dfa5103226738bd40d051bc6d484ff5c
 
-check that the hash is 938446f76d444b09afa4f49017efa4a8.  
+check that the hash is dfa5103226738bd40d051bc6d484ff5c.  
 
 ### 1.1 Using Docker commands 
 
