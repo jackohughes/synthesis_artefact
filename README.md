@@ -25,6 +25,9 @@ By default, these values are the same as those used in the paper, i.e.
 - All categories 
 - All files
 
+The user can find the code used to build the image for this artefact at
+https://github.com/granule-project/granule/releases/tag/v0.9.4.1-ESOP2024-artefact
+
 ## 2. Getting started 
 
 We begin by explaining how to run a short instance of the benchmarking tool
