@@ -22,9 +22,9 @@ check that the hash is a00191ce87b87ee0635a028dae56f776.
 ### 1.1 Using Docker commands 
 
 Extract `synthesis-artefact.tar.gz` 
-to `synthesis-artefact.tar.gz` using the command:
+to `synthesis-artefact.tar` using the command:
 
-    tar -xf granule-synthesis-benchmarks.tar.gz    
+    tar -xf synthesis-artefact.tar.gz    
 
 Next, load the container image into docker with: 
 
